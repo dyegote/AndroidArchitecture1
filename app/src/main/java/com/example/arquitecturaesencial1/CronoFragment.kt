@@ -9,13 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import com.example.arquitecturaesencial1.viewmodels.ShareViewModel
 
 class CronoFragment : Fragment() {
 
-    var nombre: String = ""
     private lateinit var cronometroMinutosView : TextView
     private lateinit var cronometroSegundosView : TextView
     private var cronometro = Cronometro(0,0)
+
+    private val viewModel: ShareViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +43,6 @@ class CronoFragment : Fragment() {
         }
 
         savedInstanceState?.let { estado ->
-            nombre = estado.getString(ESTADO_NOMBRE) ?: ""
             cronometro = estado.getParcelable(ESTADO_CRONOMETRO) ?: Cronometro(0,0)
             cronometroMinutosView.text = cronometro.minutos.toCronoFormat()
             cronometroSegundosView.text = cronometro.minutos.toCronoFormat()
@@ -49,12 +51,11 @@ class CronoFragment : Fragment() {
         cronometro.setOnCronometroTick { minutos, segundos ->
             actualizarVista(minutos, segundos)
         }
-        nombreView.text = nombre
+        nombreView.text = viewModel.nombre
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.run {
-            putString(ESTADO_NOMBRE, nombre)
             putParcelable(ESTADO_CRONOMETRO, cronometro)
         }
         super.onSaveInstanceState(outState)

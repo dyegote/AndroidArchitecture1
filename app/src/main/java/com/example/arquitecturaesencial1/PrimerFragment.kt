@@ -21,6 +21,7 @@ private const val ARG_PARAM2 = "param2"
 class PrimerFragment : Fragment() {
 
     private lateinit var listener: Listener
+    private val viewModel: ShareViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -44,11 +45,12 @@ class PrimerFragment : Fragment() {
         val label = view.findViewById<EditText>(R.id.escribirNombre)
         val boton = view.findViewById<Button>(R.id.botonComenzar)
         boton.setOnClickListener {
-            listener.onComensarPulzado(label.text.toString())
+            viewModel.nombre = label.text.toString()
+            listener.onComensarPulzado()
         }
     }
 
     interface Listener {
-        fun onComensarPulzado(nombre: String)
+        fun onComensarPulzado()
     }
 }

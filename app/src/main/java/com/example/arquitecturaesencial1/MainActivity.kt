@@ -21,13 +21,12 @@ class MainActivity : FragmentActivity(), PrimerFragment.Listener {
 
     }
 
-    override fun onComensarPulzado(nombre: String) {
-        inflateCronoFragment(nombre)
+    override fun onComensarPulzado() {
+        inflateCronoFragment()
     }
 
-    private fun inflateCronoFragment(nombre: String) {
+    private fun inflateCronoFragment() {
         val cronoFragment = CronoFragment()
-        cronoFragment.nombre = nombre
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, cronoFragment)
             .commit()
