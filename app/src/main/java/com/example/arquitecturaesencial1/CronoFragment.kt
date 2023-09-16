@@ -10,15 +10,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.example.arquitecturaesencial1.viewmodels.CronoViewModel
 import com.example.arquitecturaesencial1.viewmodels.ShareViewModel
 
 class CronoFragment : Fragment() {
 
     private lateinit var cronometroMinutosView : TextView
     private lateinit var cronometroSegundosView : TextView
-    private var cronometro = Cronometro(0,0)
+
 
     private val viewModel: ShareViewModel by activityViewModels()
+    private val cronoViewModel: CronoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,42 +43,31 @@ class CronoFragment : Fragment() {
         cronometroMinutosView = view.findViewById(R.id.cronometroMinutos)
         cronometroSegundosView = view.findViewById(R.id.cronometroSegundos)
         boton.setOnClickListener {
-            cronometro.pausar()
+            cronoViewModel.pausarCronometro()
         }
 
-        savedInstanceState?.let { estado ->
-            cronometro = estado.getParcelable(ESTADO_CRONOMETRO) ?: Cronometro(0,0)
-            cronometroMinutosView.text = cronometro.minutos.toCronoFormat()
-            cronometroSegundosView.text = cronometro.minutos.toCronoFormat()
-        }
 
-        cronometro.setOnCronometroTick { minutos, segundos ->
-            actualizarVista(minutos, segundos)
-        }
         nombreView.text = viewModel.nombre
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.run {
-            putParcelable(ESTADO_CRONOMETRO, cronometro)
+        val observadorMinutos = Observer<String> { minutos ->
+            cronometroMinutosView.text = minutos
         }
-        super.onSaveInstanceState(outState)
+        cronoViewModel.textoMinutos.observe(viewLifecycleOwner, observadorMinutos)
+
+        val observadorSegundos = Observer<String> { minutos ->
+            cronometroMinutosView.text = minutos
+        }
+        cronoViewModel.textoSegundos.observe(viewLifecycleOwner, observadorSegundos)
     }
 
     override fun onResume() {
         super.onResume()
-        cronometro.comenzar()
+        cronoViewModel.comenzarCronometro()
     }
 
     override fun onPause() {
         super.onPause()
-        cronometro.pausar()
-    }
-
-
-    private fun actualizarVista(minutos: Int, segundos: Int) {
-        cronometroMinutosView.text = minutos.toCronoFormat()
-        cronometroSegundosView.text = segundos.toCronoFormat()
+        cronoViewModel.pausarCronometro()
     }
 
     companion object {
@@ -83,9 +76,4 @@ class CronoFragment : Fragment() {
     }
 }
 
-private fun Int.toCronoFormat(): String =
-    if (this / 10 == 0) {
-        "0" + toString()
-    } else {
-        toString()
-    }
+
